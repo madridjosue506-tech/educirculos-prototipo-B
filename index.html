@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduCírculos</title>
+    <!-- Incluye el CDN de Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo personalizado para la fuente y elementos de la interfaz de usuario */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Color de fondo suave */
+        }
+        .container-box {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* Bordes más redondeados */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+        .main-content {
+            display: none;
+            flex-grow: 1;
+        }
+        .main-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+        /* Estilo para el botón de WhatsApp flotante */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* Oculta la barra de desplazamiento en el chat AI si es necesario */
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+        }
+        /* Animación de carga para simular una respuesta de IA */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .loader > div {
+            animation: bounce 0.6s infinite;
+        }
+        .loader > div:nth-child(2) { animation-delay: 0.1s; }
+        .loader > div:nth-child(3) { animation-delay: 0.2s; }
+        /* Estilo para los botones de las páginas de la landing page */
+        .landing-nav-button {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+        }
+        .landing-nav-button:hover {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        /* Estilo para la barra de progreso */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            height: 0.5rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: #2563eb;
+            height: 100%;
+            transition: width 0.3s ease-in-out;
+        }
+
+        /* Iconos de Material Design desde un CDN */
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: 'liga';
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen items-center justify-center text-gray-800">
+
+    <!-- Contenedor Principal de la Aplicación -->
+    <div id="app" class="w-full max-w-7xl mx-auto flex flex-col lg:flex-row h-full">
+
+        <!-- ===== VISTA: PÁGINA DE ATERRIZAJE ===== -->
+        <div id="landing-page" class="w-full h-full min-h-screen p-4 flex-col">
+            <!-- Barra de Navegación de la Landing Page -->
+            <header class="w-full bg-white rounded-3xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center mb-6">
+                <div class="text-3xl font-bold text-blue-600 mb-4 md:mb-0">EduCírculos</div>
+                <nav class="flex flex-wrap justify-center md:justify-end gap-x-8 gap-y-4 text-gray-600 font-semibold">
+                    <button onclick="scrollToSection('landing-home')" class="landing-nav-button">Inicio</button>
+                    <button onclick="scrollToSection('about-us')" class="landing-nav-button">Quiénes Somos</button>
+                    <button onclick="scrollToSection('courses-section')" class="landing-nav-button">Cursos</button>
+                    <button onclick="scrollToSection('testimonials')" class="landing-nav-button">Testimonios</button>
+                    <button onclick="scrollToSection('contact-us')" class="landing-nav-button">Contacto</button>
+                    <button onclick="showPage('login-page')" class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition duration-300">
+                        Iniciar Sesión
+                    </button>
+                </nav>
+            </header>
+
+            <!-- Contenido de la Landing Page -->
+            <main class="w-full flex-grow space-y-16">
+                <!-- Sección de Inicio -->
+                <section id="landing-home" class="container-box text-center max-w-4xl mx-auto py-16 flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="md:w-1/2 text-left">
+                        <h1 class="text-5xl font-extrabold text-blue-600 mb-4 leading-tight">
+                            Educación de Calidad, <span class="text-green-500">Hecha en Honduras</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-8">
+                            Conecta con cursos alineados al currículo nacional, comunidades de aprendizaje y herramientas de IA para impulsar tu futuro.
+                        </p>
+                        <button onclick="showPage('login-page')" class="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+                            Comienza tu Viaje
+                        </button>
+                    </div>
+                    <div class="md:w-1/2">
+                        <img src="https://placehold.co/600x400/8B5CF6/FFFFFF?text=Aprendizaje" alt="Ilustración de aprendizaje en línea" class="rounded-3xl shadow-lg w-full">
+                    </div>
+                </section>
+
+                <!-- Sección Quiénes Somos -->
+                <section id="about-us" class="container-box max-w-4xl mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="md:w-1/2">
+                        <img src="https://placehold.co/600x400/3B82F6/FFFFFF?text=Comunidad+y+Educacion" alt="Ilustración de comunidad de aprendizaje" class="rounded-3xl shadow-lg w-full">
+                    </div>
+                    <div class="md:w-1/2 prose max-w-none text-gray-700">
+                        <h2 class="text-4xl font-bold text-gray-800 text-center md:text-left mb-6">Quiénes Somos</h2>
+                        <p>EduCírculos es una iniciativa nacida en Honduras con el propósito de democratizar la educación de alta calidad. Creemos firmemente que el acceso al conocimiento es la llave para el progreso personal y comunitario.</p>
+                        <p>Nuestra plataforma ofrece una variedad de cursos alineados con el currículo educativo nacional y complementarios, creados tanto por nuestro equipo de expertos como por una vibrante comunidad de educadores y profesionales.</p>
+                    </div>
+                </section>
+
+                <!-- Sección de Cursos Destacados -->
+                <section id="courses-section" class="container-box max-w-4xl mx-auto">
+                    <h2 class="text-4xl font-bold text-gray-800 text-center mb-8">Cursos que Transforman</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                            <h3 class="font-bold text-lg mb-2 text-blue-600">Introducción a la Programación</h3>
+                            <p class="text-sm text-gray-600">Aprende los fundamentos de la lógica de programación.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                            <h3 class="font-bold text-lg mb-2 text-blue-600">Historia de Honduras</h3>
+                            <p class="text-sm text-gray-600">Un viaje a través del pasado de nuestra nación.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                            <h3 class="font-bold text-lg mb-2 text-blue-600">Cálculo Diferencial</h3>
+                            <p class="text-sm text-gray-600">Curso avanzado para estudiantes de bachillerato.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Sección de Testimonios -->
+                <section id="testimonials" class="container-box max-w-4xl mx-auto">
+                    <h2 class="text-4xl font-bold text-gray-800 text-center mb-8">Lo que Dicen Nuestros Usuarios</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-blue-50 p-8 rounded-2xl shadow-lg relative text-blue-800">
+                            <span class="material-icons text-4xl text-blue-300 absolute -top-2 -left-2 transform rotate-180">format_quote</span>
+                            <p class="italic mb-4">"Gracias a EduCírculos, pude repasar para mis exámenes de bachillerato y obtuve la mejor nota de mi clase. ¡Los cursos son muy claros y útiles!"</p>
+                            <div class="font-bold text-sm flex items-center">
+                                <span class="material-icons text-lg mr-2">person</span>
+                                - Estudiante
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-8 rounded-2xl shadow-lg relative text-blue-800">
+                            <span class="material-icons text-4xl text-blue-300 absolute -top-2 -left-2 transform rotate-180">format_quote</span>
+                            <p class="italic mb-4">"Como educadora, he encontrado una comunidad de apoyo y las herramientas para crear contenido relevante para mis estudiantes. ¡EduCírculos es una herramienta fantástica!"</p>
+                            <div class="font-bold text-sm flex items-center">
+                                <span class="material-icons text-lg mr-2">person</span>
+                                - Educadora
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección de Contacto -->
+                <section id="contact-us" class="container-box max-w-4xl mx-auto">
+                    <h2 class="text-4xl font-bold text-gray-800 text-center mb-8">Contacta con Nosotros</h2>
+                    <p class="text-center text-gray-600 mb-6">Si tienes alguna pregunta, sugerencia o necesitas ayuda, no dudes en contactarnos. ¡Estamos aquí para servirte!</p>
+                    <form class="space-y-6 max-w-xl mx-auto">
+                        <div>
+                            <label for="name" class="block text-gray-700 font-semibold mb-2">Nombre Completo</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu nombre">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-gray-700 font-semibold mb-2">Correo Electrónico</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu correo">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-gray-700 font-semibold mb-2">Mensaje</label>
+                            <textarea id="message" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu mensaje aquí..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </section>
+            </main>
+        </div>
+
+        <!-- ===== VISTA: PÁGINA DE INICIO DE SESIÓN ===== -->
+        <div id="login-page" class="w-full h-full min-h-screen hidden items-center justify-center p-4">
+            <div class="container-box text-center max-w-md w-full">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6">Iniciar Sesión</h2>
+                <p class="text-gray-500 mb-6">Elige tu rol para continuar</p>
+                <div class="flex flex-col space-y-4">
+                    <button onclick="login('student')" class="bg-indigo-500 text-white py-3 px-6 rounded-lg text-lg font-medium hover:bg-indigo-600 transition duration-300 transform hover:scale-105">
+                        Soy un Estudiante
+                    </button>
+                    <button onclick="login('educator')" class="bg-green-500 text-white py-3 px-6 rounded-lg text-lg font-medium hover:bg-green-600 transition duration-300 transform hover:scale-105">
+                        Soy un Educador
+                    </button>
+                </div>
+                <button onclick="showPage('landing-page')" class="mt-8 text-blue-500 hover:text-blue-700 transition duration-300">
+                    Regresar
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== VISTA: DASHBOARD PRINCIPAL ===== -->
+        <div id="dashboard" class="w-full hidden h-full min-h-screen p-4 flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+            
+            <!-- Sidebar (Menú de Navegación) -->
+            <aside class="w-full lg:w-64 bg-white p-6 rounded-3xl shadow-lg h-full">
+                <div class="text-2xl font-bold text-blue-600 mb-6">EduCírculos</div>
+                <ul id="dashboard-nav" class="space-y-4">
+                    <!-- Los botones de navegación se renderizarán dinámicamente -->
+                </ul>
+            </aside>
+            
+            <!-- Contenido Principal del Dashboard -->
+            <main class="w-full flex-grow bg-white p-8 rounded-3xl shadow-lg overflow-y-auto">
+                
+                <!-- Contenido Dinámico Aquí -->
+                <div id="dashboard-content" class="w-full">
+                    <!-- El contenido de cada sección se inyectará aquí con JavaScript -->
+                </div>
+
+            </main>
+        </div>
+
+        <!-- Botón flotante para WhatsApp -->
+        <a href="https://wa.me/50433333333" target="_blank" class="whatsapp-float">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.928c0 1.399-.366 2.76-.948 3.996l-1.425 4.341 4.48-1.399A7.94 7.94 0 0 0 7.994 16c4.366 0 7.923-3.558 7.927-7.928a7.868 7.868 0 0 0-2.32-5.652zM4.015 12.607l-.396 1.205 1.189-.371A6.712 6.712 0 0 1 7.994 15c3.673 0 6.657-2.984 6.658-6.657S11.667 1.686 7.994 1.686a6.678 6.678 0 0 1-5.666 3.195 6.678 6.678 0 0 1-1.314-1.127l-1.205 1.189-.371 1.189zM5.961 4.39A2.96 2.96 0 0 1 7.994 5.961c1.196 0 2.167-.971 2.167-2.167S9.19 1.626 7.994 1.626c-1.196 0-2.167.971-2.167 2.167zM7.994 15.111c-2.348 0-4.52-1.026-6.007-2.738l-2.022 2.022a.5.5 0 0 0-.146.354v1.414l1.414-.354a.5.5 0 0 0 .354-.146l2.022-2.022c1.712 1.487 3.884 2.183 6.007 2.183 3.957 0 7.153-3.196 7.153-7.153S11.951 1.686 7.994 1.686c-2.052 0-3.958.85-5.32 2.213A7.854 7.854 0 0 0 .195 7.928c0 2.245.945 4.31 2.502 5.766L.195 15.938a.5.5 0 0 0 .5.5H.5zM7.994 1.129c3.754 0 6.808 3.054 6.808 6.808S11.748 14.745 7.994 14.745 1.186 11.691 1.186 7.937 4.24 1.129 7.994 1.129zM10.74 10.74a.8.8 0 0 1-1.132 0L8.01 9.141a.8.8 0 0 1 0-1.132l1.6-1.6c.313-.313.82-.313 1.132 0a.8.8 0 0 1 0 1.132l-1.042 1.042 1.042 1.042a.8.8 0 0 1 0 1.132z"/>
+            </svg>
+        </a>
+
+    </div>
+
+    <!-- JavaScript para la navegación y el contenido dinámico -->
+    <script>
+        'use strict';
+
+        // Función para mostrar la página correcta y ocultar las demás
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('#app > div');
+            pages.forEach(page => {
+                if (page.id === pageId) {
+                    page.classList.remove('hidden');
+                    page.classList.add('flex');
+                    // Resetear el constructor de cursos al salir
+                    if (pageId !== 'dashboard') {
+                        courseBuilderStep = 1;
+                    }
+                } else {
+                    page.classList.add('hidden');
+                    page.classList.remove('flex');
+                }
+            });
+        }
+        
+        // Función para desplazar a una sección específica en la landing page
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Variable global para almacenar el rol del usuario (estudiante/educador)
+        let userRole = '';
+
+        // Función para manejar el inicio de sesión y el cambio de vista
+        function login(role) {
+            userRole = role; // Guarda el rol del usuario
+            renderDashboardNav(); // Renderiza la navegación adecuada para el rol
+            showPage('dashboard');
+            // Al fusionar Inicio y Dashboard, siempre mostramos el contenido de 'home' al iniciar sesión
+            showDashboardContent('home');
+        }
+
+        // Función para renderizar el menú de navegación del dashboard según el rol
+        function renderDashboardNav() {
+            const nav = document.getElementById('dashboard-nav');
+            if (!nav) return;
+
+            let navItems = `
+                <li><button onclick="showDashboardContent('home')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">home</span><span>Inicio</span></button></li>
+                <li><button onclick="showDashboardContent('courses')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">school</span><span>Cursos</span></button></li>
+                <li><button onclick="showDashboardContent('circles')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">groups</span><span>Círculos</span></button></li>
+                <li><button onclick="showDashboardContent('credits')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">monetization_on</span><span>EduCréditos</span></button></li>
+                <li><button onclick="showDashboardContent('chat')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">chat</span><span>Chat con IA</span></button></li>
+                <li><button onclick="showDashboardContent('notifications')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">notifications</span><span>Notificaciones</span></button></li>
+                <li><button onclick="showDashboardContent('plans')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">workspace_premium</span><span>Cambiar Plan</span></button></li>
+            `;
+
+            if (userRole === 'educator') {
+                navItems += `
+                    <li class="pt-4"><hr class="border-t border-gray-200"></li>
+                    <li class="mt-4"><button onclick="showDashboardContent('educator-dashboard')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">dashboard</span><span>Panel de Control</span></button></li>
+                    <li><button onclick="showDashboardContent('course-management')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">edit_note</span><span>Gestión de Cursos</span></button></li>
+                    <li><button onclick="showDashboardContent('circle-creation')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">add_circle</span><span>Crear Círculo</span></button></li>
+                    <li><button onclick="showDashboardContent('student-management')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">group</span><span>Gestión de Estudiantes</span></button></li>
+                    <li><button onclick="showDashboardContent('analytics')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">analytics</span><span>Analíticas</span></button></li>
+                    <li><button onclick="showDashboardContent('payments')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">payments</span><span>Pagos e Ingresos</span></button></li>
+                    <li><button onclick="showDashboardContent('profile')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">person</span><span>Mi Perfil</span></button></li>
+                `;
+            } else if (userRole === 'student') {
+                 navItems += `
+                    <li class="pt-4"><hr class="border-t border-gray-200"></li>
+                    <li><button onclick="showDashboardContent('student-profile')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">person</span><span>Mi Perfil</span></button></li>
+                    <li><button onclick="showDashboardContent('student-progress')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition duration-300"><span class="material-icons">trending_up</span><span>Progreso</span></button></li>
+                `;
+            }
+
+            navItems += `
+                <li class="pt-8"><button onclick="showPage('landing-page')" class="flex items-center space-x-3 w-full text-left py-3 px-4 rounded-xl text-red-500 hover:bg-red-50 transition duration-300"><span class="material-icons">logout</span><span>Cerrar Sesión</span></button></li>
+            `;
+            nav.innerHTML = navItems;
+        }
+
+        // Función para manejar la llamada a la API de Gemini
+        async function callGeminiAPI(prompt) {
+            // Respuestas precargadas para la funcionalidad sin API
+            const preloadedResponses = {
+                "que es educirculos": "EduCírculos es una plataforma educativa que ofrece cursos y comunidades de aprendizaje diseñados para estudiantes y educadores en Honduras.",
+                "como funciona educirculos": "Funcionamos con cursos y círculos de aprendizaje. Puedes inscribirte en cursos, seguir tu progreso, y unirte a comunidades para colaborar con otros.",
+                "que tipo de cursos ofrecen": "Ofrecemos una variedad de cursos alineados con el currículo educativo de Honduras, así como temas para adultos y niños. Cubrimos áreas como matemáticas, tecnología y ciencias sociales.",
+                "los cursos son gratuitos": "Tenemos una mezcla de cursos gratuitos y de pago. Los cursos de pago se pueden comprar con EduCréditos, nuestra moneda virtual.",
+                "que son los educréditos": "Los EduCréditos son la moneda virtual de EduCírculos. Puedes usarlos para comprar cursos premium o herramientas exclusivas. Puedes ganarlos completando cursos o comprándolos.",
+                "como puedo ser educador": "Si eres educador y quieres unirte, solo necesitas iniciar sesión con el rol de educador para acceder a herramientas como el generador de ideas de cursos con IA y la gestión de estudiantes.",
+                "hay una comunidad para educadores": "Sí, los educadores tienen acceso a sus propios círculos y a herramientas de gestión para crear y publicar cursos fácilmente."
+            };
+
+            const lowercasePrompt = prompt.toLowerCase().trim();
+            for (const question in preloadedResponses) {
+                if (lowercasePrompt.includes(question)) {
+                    return preloadedResponses[question];
+                }
+            }
+            
+            // Si no hay una respuesta precargada, intenta llamar a la API
+            const apiKey = ""; // La API key se proporcionará automáticamente por el entorno de Canvas.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            // Añade una instrucción al prompt para obtener una respuesta concisa y en formato amigable.
+            const newPrompt = `Responde a la siguiente pregunta de manera concisa y amigable, usando viñetas si es necesario. No superes las 100 palabras. La pregunta es: "${prompt}"`;
+
+            const chatHistory = [{ role: "user", parts: [{ text: newPrompt }] }];
+            const payload = { contents: chatHistory };
+
+            let attempts = 0;
+            const maxRetries = 5;
+            let delay = 1000;
+
+            while (attempts < maxRetries) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.status === 429) {
+                        attempts++;
+                        delay *= 2;
+                        await new Promise(res => setTimeout(res, delay));
+                        continue;
+                    }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        return "Lo siento, no pude generar una respuesta. Inténtalo de nuevo.";
+                    }
+                } catch (error) {
+                    console.error("Error al llamar a la API de Gemini:", error);
+                    return "Ocurrió un error al conectar con el asistente de IA. Por favor, revisa tu conexión.";
+                }
+            }
+            return "Se excedió el número de reintentos. Por favor, inténtalo de nuevo más tarde.";
+        }
+        
+        let courseBuilderStep = 1;
+
+        function renderCourseBuilder() {
+            const contentArea = document.getElementById('dashboard-content');
+            let contentHTML = '';
+
+            switch(courseBuilderStep) {
+                case 1:
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Paso 1: Información Básica del Curso</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Título del Curso</label>
+                                <input type="text" id="course-title" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Introducción a la Historia de Honduras">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                                <textarea id="course-description" rows="4" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe una descripción detallada del curso..."></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-4">
+                                <button onclick="saveDraft()" class="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">Guardar Borrador</button>
+                                <button onclick="nextStep()" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Siguiente</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 2:
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Paso 2: Contenido y Recursos</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Módulos del Curso</label>
+                                <textarea id="course-modules" rows="6" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Añade los módulos aquí (Ej: Módulo 1: La Conquista Española)..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Resultados de Aprendizaje</label>
+                                <textarea id="course-outcomes" rows="4" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Al finalizar, el estudiante podrá analizar los eventos clave de la independencia..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Recursos (Videos, PDFs)</label>
+                                <input type="text" id="course-resources" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sube un archivo o pega un enlace (Ej: enlace de YouTube, Google Drive)">
+                            </div>
+                            <div class="flex justify-between space-x-4">
+                                <button onclick="previousStep()" class="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">Anterior</button>
+                                <button onclick="nextStep()" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Siguiente</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 3:
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Paso 3: Detalles Finales</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Precio del Curso (Lempiras)</label>
+                                <input type="number" id="course-price" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: 250">
+                                <p class="text-xs text-gray-500 mt-1">Déjalo en blanco para un curso gratuito.</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Etiquetas (Currículo Nacional)</label>
+                                <input type="text" id="course-tags" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: historia, 9no grado, estudios sociales">
+                            </div>
+                            <div class="flex justify-between space-x-4">
+                                <button onclick="previousStep()" class="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">Anterior</button>
+                                <button onclick="saveCourse()" class="bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-700 transition duration-300">Publicar Curso</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            contentArea.innerHTML = contentHTML;
+        }
+
+        function nextStep() {
+            courseBuilderStep++;
+            renderCourseBuilder();
+        }
+
+        function previousStep() {
+            if (courseBuilderStep > 1) {
+                courseBuilderStep--;
+                renderCourseBuilder();
+            }
+        }
+
+        function saveDraft() {
+            showCustomAlert('¡Borrador Guardado!', 'El borrador de tu curso ha sido guardado exitosamente.');
+            showDashboardContent('course-management');
+        }
+
+        function saveCourse() {
+            showCustomAlert('¡Curso Publicado!', 'Tu curso ha sido publicado con éxito.');
+            courseBuilderStep = 1;
+            showDashboardContent('course-management');
+        }
+
+        function showCustomAlert(title, message) {
+            const alertModal = document.createElement('div');
+            alertModal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50';
+            alertModal.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm mx-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">${title}</h3>
+                    <p class="text-gray-600 mb-6">${message}</p>
+                    <button onclick="closeModal(this)" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Aceptar</button>
+                </div>
+            `;
+            document.body.appendChild(alertModal);
+        }
+        
+        function closeModal(button) {
+            button.closest('.fixed').remove();
+        }
+
+        // Función para mostrar el contenido dinámico en el dashboard
+        function showDashboardContent(contentId, param = '') {
+            const contentArea = document.getElementById('dashboard-content');
+            let contentHTML = '';
+
+            // Lógica para cada sección del dashboard
+            switch (contentId) {
+                case 'home':
+                    // Contenido para el rol de estudiante
+                    if (userRole === 'student') {
+                        contentHTML = `
+                            <h2 class="text-3xl font-bold text-gray-800 mb-6">¡Hola, bienvenido a EduCírculos!</h2>
+                            <div class="mb-8">
+                                <h3 class="text-2xl font-semibold mb-4">Cursos Inscritos</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Introducción a la Programación</h4>
+                                        <div class="flex items-center space-x-2 text-gray-600 mb-4">
+                                            <span class="material-icons">trending_up</span>
+                                            <p class="text-sm font-semibold">Progreso: 75%</p>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar" style="width: 75%;"></div>
+                                        </div>
+                                        <div class="mt-4 flex justify-between items-center">
+                                            <p class="text-sm text-gray-500">Última lección: Módulo 3</p>
+                                            <button onclick="showDashboardContent('view-course', 'curso-programacion')" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700">Continuar Curso</button>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Historia de Honduras</h4>
+                                        <div class="flex items-center space-x-2 text-gray-600 mb-4">
+                                            <span class="material-icons">trending_up</span>
+                                            <p class="text-sm font-semibold">Progreso: 20%</p>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar" style="width: 20%;"></div>
+                                        </div>
+                                        <div class="mt-4 flex justify-between items-center">
+                                            <p class="text-sm text-gray-500">Última lección: Módulo 1</p>
+                                            <button onclick="showDashboardContent('view-course', 'curso-historia')" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700">Continuar Curso</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-semibold mb-4">Recomendaciones para ti</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Cálculo Diferencial</h4>
+                                        <p class="text-sm text-gray-600">Curso avanzado para estudiantes de bachillerato.</p>
+                                        <button onclick="showDashboardContent('courses')" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Ver Curso</button>
+                                    </div>
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Círculo de Estudios de Química</h4>
+                                        <p class="text-sm text-gray-600">Únete a una comunidad para practicar química.</p>
+                                        <button onclick="showDashboardContent('circles')" class="mt-4 w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">Unirse</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else { // Contenido para el rol de educador
+                        contentHTML = `
+                            <h2 class="text-3xl font-bold text-gray-800 mb-6">¡Hola, bienvenido a EduCírculos!</h2>
+                            <div class="bg-blue-50 p-6 rounded-2xl shadow-inner text-blue-800">
+                                <h3 class="text-xl font-semibold mb-2">Noticias y Anuncios</h3>
+                                <p>¡Nuevos cursos alineados con el currículo de Matemáticas de 9no grado ya disponibles!</p>
+                            </div>
+                            <div class="mt-8">
+                                <h3 class="text-2xl font-semibold mb-4">Cursos Recientes</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Introducción a la Programación</h4>
+                                        <p class="text-sm text-gray-600">Aprende los fundamentos de la lógica de programación.</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Historia de Honduras</h4>
+                                        <p class="text-sm text-gray-600">Un viaje a través del pasado de nuestra nación.</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105">
+                                        <h4 class="font-bold text-lg mb-2 text-blue-600">Cálculo Diferencial e Integral</h4>
+                                        <p class="text-sm text-gray-600">Curso avanzado para estudiantes de bachillerato.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    break;
+                case 'courses':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Cursos Disponibles</h2>
+                        <div class="mb-6 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+                            <input type="text" placeholder="Buscar cursos..." class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select class="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Todas las categorías</option>
+                                <option>Matemáticas</option>
+                                <option>Ciencias Sociales</option>
+                                <option>Tecnología</option>
+                            </select>
+                            <select class="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Todos los niveles</option>
+                                <option>Básico</option>
+                                <option>Intermedio</option>
+                                <option>Avanzado</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Tarjeta de curso de ejemplo (Estudiante) -->
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105 cursor-pointer" onclick="showDashboardContent('view-course', 'curso-programacion')">
+                                <div class="relative mb-4">
+                                    <img src="https://placehold.co/400x200/555887/FFFFFF?text=Programacion" alt="Imagen del curso" class="rounded-xl w-full h-32 object-cover">
+                                    <div class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">De Pago</div>
+                                </div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-600">Introducción a la Programación</h4>
+                                <p class="text-sm text-gray-600">Aprende los fundamentos de la lógica de programación.</p>
+                                <p class="text-xs text-gray-400 mt-2">Por: Educador X</p>
+                                <p class="text-sm text-green-600 font-semibold mt-2">Gana 50 EduCréditos</p>
+                                <button class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Inscribirse</button>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md transition duration-300 hover:scale-105 cursor-pointer" onclick="showDashboardContent('view-course', 'curso-historia')">
+                                <div class="relative mb-4">
+                                    <img src="https://placehold.co/400x200/555887/FFFFFF?text=Historia" alt="Imagen del curso" class="rounded-xl w-full h-32 object-cover">
+                                    <div class="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">Gratuito</div>
+                                </div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-600">Historia de Honduras</h4>
+                                <p class="text-sm text-gray-600">Un viaje a través del pasado de nuestra nación.</p>
+                                <p class="text-xs text-gray-400 mt-2">Por: Educador Y</p>
+                                <p class="text-sm text-green-600 font-semibold mt-2">Gana 20 EduCréditos</p>
+                                <button class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Inscribirse</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'view-course':
+                    // Contenido detallado del curso (ejemplo)
+                    const courseData = {
+                        'curso-programacion': {
+                            title: 'Introducción a la Programación',
+                            description: 'Este curso es perfecto para principiantes. Aprenderás los fundamentos de la lógica de programación, algoritmos y estructuras de datos básicas. Al completar este curso, habrás ganado una base sólida para iniciar tu camino en el mundo del desarrollo de software.',
+                            videoUrl: 'https://www.youtube.com/embed/Yt-Sskw-p4M?si=L43L_Y4h9h4uL_W4',
+                            modules: [
+                                { title: 'Módulo 1: ¿Qué es un Algoritmo?', completed: true },
+                                { title: 'Módulo 2: Variables y Tipos de Datos', completed: true },
+                                { title: 'Módulo 3: Estructuras de Control', completed: false }
+                            ],
+                            resources: ['Guía de conceptos básicos (PDF)', 'Enlace a plataforma de práctica']
+                        },
+                        'curso-historia': {
+                            title: 'Historia de Honduras',
+                            description: 'Un viaje a través del pasado de nuestra nación. Desde la era precolombina hasta la actualidad, este curso explora los eventos, las figuras y los movimientos que han moldeado a Honduras. Ideal para estudiantes de bachillerato y cualquier persona interesada en nuestra cultura.',
+                            videoUrl: 'https://www.youtube.com/embed/oP26x9Q831Q?si=50j31V10oE5K3J42',
+                            modules: [
+                                { title: 'Módulo 1: La Época Precolombina', completed: false },
+                                { title: 'Módulo 2: La Conquista Española', completed: false },
+                                { title: 'Módulo 3: La Independencia', completed: false }
+                            ],
+                            resources: ['Cronología histórica (PDF)', 'Documental "Honduras a través del tiempo"']
+                        }
+                    };
+
+                    const course = courseData[param];
+                    if (course) {
+                        contentHTML = `
+                            <h2 class="text-3xl font-bold text-gray-800 mb-6">Curso: ${course.title}</h2>
+                            <button onclick="showDashboardContent('courses')" class="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-semibold mb-4 hover:bg-gray-300 transition duration-300">
+                                Regresar a Cursos
+                            </button>
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md mb-6">
+                                <div class="aspect-w-16 aspect-h-9 bg-gray-300 rounded-xl mb-4 h-64 overflow-hidden">
+                                    <iframe class="w-full h-full" src="${course.videoUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2">Descripción del Curso</h3>
+                                <p class="text-sm text-gray-600">${course.description}</p>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-4">Lecciones</h3>
+                                    <ul class="space-y-2">
+                                        ${course.modules.map(mod => `
+                                            <li class="p-4 rounded-xl flex justify-between items-center cursor-pointer ${mod.completed ? 'bg-blue-50' : 'bg-gray-100'}">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="material-icons text-${mod.completed ? 'blue-600' : 'gray-500'}">play_circle_filled</span>
+                                                    <p class="font-semibold text-${mod.completed ? 'blue-800' : 'gray-700'}">${mod.title}</p>
+                                                </div>
+                                                <span class="material-icons text-${mod.completed ? 'green-600' : 'gray-400'}">${mod.completed ? 'check_circle' : 'circle'}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                <div class="space-y-6">
+                                    <div>
+                                        <h3 class="text-2xl font-semibold mb-4">Mis Notas</h3>
+                                        <textarea rows="6" class="w-full p-4 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tus notas sobre la lección..."></textarea>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-2xl font-semibold mb-4">Recursos</h3>
+                                        <ul class="space-y-2">
+                                            ${course.resources.map(res => `
+                                                <li class="flex items-center space-x-2 text-blue-600">
+                                                    <span class="material-icons">attach_file</span>
+                                                    <a href="#" class="hover:underline">${res}</a>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        contentHTML = '<div class="text-center text-gray-500">Curso no encontrado.</div>';
+                    }
+                    break;
+                case 'student-progress':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Mi Progreso</h2>
+                        <div class="space-y-8">
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                                <h3 class="font-bold text-lg mb-4 text-blue-600">Progreso en Cursos</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="font-semibold">Introducción a la Programación</p>
+                                        <div class="progress-bar-container mt-2">
+                                            <div class="progress-bar" style="width: 75%;"></div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-1">75% completado</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Historia de Honduras</p>
+                                        <div class="progress-bar-container mt-2">
+                                            <div class="progress-bar" style="width: 20%;"></div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-1">20% completado</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                                <h3 class="font-bold text-lg mb-4 text-blue-600">Actividades y Evaluaciones</h3>
+                                <ul class="space-y-4">
+                                    <li class="flex justify-between items-center p-3 rounded-lg border">
+                                        <p class="font-semibold text-gray-800">Cuestionario: Fundamentos de Lógica</p>
+                                        <span class="text-green-600 font-bold">100%</span>
+                                    </li>
+                                    <li class="flex justify-between items-center p-3 rounded-lg border">
+                                        <p class="font-semibold text-gray-800">Tarea: Análisis de la Conquista</p>
+                                        <span class="text-yellow-600 font-bold">Pendiente</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-blue-100 p-6 rounded-2xl shadow-inner text-center">
+                                <h3 class="font-bold text-xl mb-2">Certificado de Finalización</h3>
+                                <p class="text-blue-800">¡Felicidades! Has completado el curso de 'Historia de Honduras'.</p>
+                                <button class="mt-4 bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700">Descargar Certificado</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'student-profile':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Mi Perfil</h2>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md flex items-center space-x-6 mb-8">
+                            <img src="https://placehold.co/100x100/A0B9D6/FFFFFF?text=JP" alt="Foto de perfil" class="rounded-full w-24 h-24 object-cover">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Juan Pérez</h3>
+                                <p class="text-sm text-gray-600">Estudiante de Bachillerato</p>
+                                <div class="mt-4 flex space-x-2">
+                                    <span class="bg-purple-100 text-purple-600 text-xs font-semibold px-2 py-1 rounded-full">Matemáticas</span>
+                                    <span class="bg-purple-100 text-purple-600 text-xs font-semibold px-2 py-1 rounded-full">Programación</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                            <h3 class="font-bold text-lg mb-4">Logros y Certificaciones</h3>
+                            <ul class="space-y-2">
+                                <li class="flex items-center space-x-2 text-green-600">
+                                    <span class="material-icons">workspace_premium</span>
+                                    <p class="font-semibold">Certificado: Historia de Honduras (2023)</p>
+                                </li>
+                                <li class="flex items-center space-x-2 text-yellow-600">
+                                    <span class="material-icons">emoji_events</span>
+                                    <p class="font-semibold">Insignia: Participante activo en Círculos</p>
+                                </li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'educator-dashboard':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Resumen del Panel de Control</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-blue-100 p-6 rounded-xl text-center shadow-sm">
+                                <p class="text-4xl font-bold text-blue-700">5</p>
+                                <p class="text-blue-600 text-sm mt-2">Cursos Creados</p>
+                            </div>
+                            <div class="bg-green-100 p-6 rounded-xl text-center shadow-sm">
+                                <p class="text-4xl font-bold text-green-700">120</p>
+                                <p class="text-green-600 text-sm mt-2">Estudiantes Inscritos</p>
+                            </div>
+                            <div class="bg-purple-100 p-6 rounded-xl text-center shadow-sm">
+                                <p class="text-4xl font-bold text-purple-700">7,500</p>
+                                <p class="text-purple-600 text-sm mt-2">Vistas Totales</p>
+                            </div>
+                            <div class="bg-yellow-100 p-6 rounded-xl text-center shadow-sm">
+                                <p class="text-4xl font-bold text-yellow-700">L. 3,200</p>
+                                <p class="text-yellow-600 text-sm mt-2">Ingresos Estimados</p>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Acceso Rápido</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <button onclick="showDashboardContent('course-management')" class="bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition duration-300">
+                                <span class="material-icons text-white mr-2">add_circle_outline</span> Crear Nuevo Curso
+                            </button>
+                            <button onclick="showDashboardContent('circle-creation')" class="bg-green-600 text-white py-4 rounded-xl font-semibold hover:bg-green-700 transition duration-300">
+                                <span class="material-icons text-white mr-2">groups</span> Crear Círculo
+                            </button>
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        const generateBtn = document.getElementById('generate-course-btn');
+                        const input = document.getElementById('course-idea-input');
+                        const output = document.getElementById('course-idea-output');
+
+                        generateBtn.addEventListener('click', async () => {
+                            const prompt = input.value.trim();
+                            if (prompt === '') {
+                                output.textContent = "Por favor, escribe una idea de curso.";
+                                return;
+                            }
+                            
+                            output.innerHTML = `<div class="loader flex justify-center items-center space-x-2"><div class="w-2 h-2 bg-blue-500 rounded-full"></div><div class="w-2 h-2 bg-blue-500 rounded-full"></div><div class="w-2 h-2 bg-blue-500 rounded-full"></div></div>`;
+
+                            const aiPrompt = `Actúa como un diseñador de currículo educativo. Crea un esqueleto detallado para un curso sobre "${prompt}". El esqueleto debe ser relevante para estudiantes de Honduras y debe incluir:
+- Título del Curso
+- Descripción breve
+- Público Objetivo
+- Módulos del Curso (con títulos y una breve descripción de cada uno)
+- Objetivos de Aprendizaje
+
+Formatea la respuesta en un texto plano y bien organizado.`;
+
+                            const response = await callGeminiAPI(aiPrompt);
+                            output.textContent = response;
+                        });
+                    }, 0);
+                    break;
+                case 'course-builder':
+                    renderCourseBuilder();
+                    break;
+                case 'circle-creation':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Crear un Nuevo Círculo</h2>
+                        <form class="space-y-6">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Nombre del Círculo</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Círculo de Lectura de Literatura Hondureña">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                                <textarea rows="4" class="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe el propósito y las actividades del círculo..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Temas Relacionados</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: literatura, historia, arte">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Subir Imagen de Portada</label>
+                                <input type="file" class="w-full p-2 border rounded-lg">
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300">
+                                Crear Círculo
+                            </button>
+                        </form>
+                    `;
+                    break;
+                case 'student-management':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Estudiantes</h2>
+                        <p class="text-gray-600 mb-4">Lista de estudiantes inscritos en tus cursos.</p>
+                        <ul class="space-y-4">
+                            <!-- Estudiante de ejemplo -->
+                            <li class="p-4 bg-gray-50 rounded-xl shadow-sm flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-lg">María Rodríguez</h4>
+                                    <p class="text-sm text-gray-600">Inscrita en: <span class="font-semibold">Cálculo Diferencial</span></p>
+                                    <p class="text-sm text-gray-600">Progreso: 85% completado</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="bg-blue-100 text-blue-600 p-2 rounded-full hover:bg-blue-200 transition duration-300"><span class="material-icons">send</span></button>
+                                    <button class="bg-green-100 text-green-600 p-2 rounded-full hover:bg-green-200 transition duration-300"><span class="material-icons">task_alt</span></button>
+                                </div>
+                            </li>
+                            <li class="p-4 bg-gray-50 rounded-xl shadow-sm flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-lg">Carlos Gómez</h4>
+                                    <p class="text-sm text-gray-600">Inscrito en: <span class="font-semibold">Historia de Honduras</span></p>
+                                    <p class="text-sm text-gray-600">Progreso: 45% completado</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="bg-blue-100 text-blue-600 p-2 rounded-full hover:bg-blue-200 transition duration-300"><span class="material-icons">send</span></button>
+                                    <button class="bg-green-100 text-green-600 p-2 rounded-full hover:bg-green-200 transition duration-300"><span class="material-icons">task_alt</span></button>
+                                </div>
+                            </li>
+                        </ul>
+                    `;
+                    break;
+                case 'analytics':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Analíticas y Rendimiento</h2>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md space-y-4">
+                            <div>
+                                <h3 class="font-semibold text-lg mb-2">Vistas y Finalizaciones del Curso</h3>
+                                <p class="text-gray-600">Visualización de datos de participación a lo largo del tiempo.</p>
+                                <!-- Aquí iría una gráfica, por ahora es texto -->
+                                <div class="h-48 bg-gray-200 rounded-lg mt-4 flex items-center justify-center text-gray-500">
+                                    [Gráfica de vistas y finalizaciones]
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg mb-2">Opiniones y Calificaciones</h3>
+                                <div class="flex items-center space-x-2 text-yellow-500 text-xl">
+                                    <span class="material-icons">star</span>
+                                    <span class="material-icons">star</span>
+                                    <span class="material-icons">star</span>
+                                    <span class="material-icons">star</span>
+                                    <span class="material-icons">star_half</span>
+                                    <p class="text-gray-700 text-base font-bold ml-2">4.5/5.0</p>
+                                </div>
+                                <p class="text-gray-600 mt-2">Promedio basado en 35 calificaciones de tus cursos.</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'payments':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Pagos e Ingresos</h2>
+                        <div class="bg-green-50 p-6 rounded-2xl shadow-md text-green-800 mb-6">
+                            <p class="text-lg font-semibold mb-2">Ingresos Generados:</p>
+                            <p class="text-4xl font-extrabold">L. 3,200.00</p>
+                            <p class="text-sm mt-1">Estimado del mes actual.</p>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Historial de Pagos</h3>
+                        <p class="text-gray-600 mb-4">Tu balance acumulado es de L. 1,500.00 listo para retiro.</p>
+                        <button class="bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition duration-300">
+                            Solicitar Retiro de Fondos
+                        </button>
+                    `;
+                    break;
+                case 'profile':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Perfil del Educador</h2>
+                        <form class="space-y-6">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Nombre Completo</label>
+                                <input type="text" value="Ana Meléndez" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Especialidad</label>
+                                <input type="text" value="Matemáticas, Física" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Biografía</label>
+                                <textarea rows="4" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">Soy una educadora apasionada por las ciencias exactas. Mi misión es hacer que el aprendizaje de las matemáticas sea divertido y accesible para todos.</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Foto de Perfil</label>
+                                <input type="file" class="w-full p-2 border rounded-lg">
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                                Guardar Cambios
+                            </button>
+                        </form>
+                    `;
+                    break;
+                case 'circles':
+                    // Contenido para la vista de "Círculos" del estudiante
+                    if (userRole === 'student') {
+                        contentHTML = `
+                            <h2 class="text-3xl font-bold text-gray-800 mb-6">Mis Círculos de Aprendizaje</h2>
+                            <p class="text-gray-600 mb-4">Conéctate con otros estudiantes y educadores para aprender en grupo. Aquí puedes encontrar tus círculos y unirte a otros.</p>
+                            <div class="mb-8">
+                                <h3 class="text-2xl font-semibold mb-4">Círculos en los que participo</h3>
+                                <div class="bg-gray-50 p-6 rounded-2xl shadow-md cursor-pointer" onclick="showDashboardContent('view-circle', 'Círculo de Historia de Honduras')">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="p-3 bg-yellow-100 rounded-full">
+                                            <span class="material-icons text-yellow-600">forum</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-lg">Círculo de Historia de Honduras</h4>
+                                            <p class="text-sm text-gray-600">Reúnete con tu grupo para discutir temas de la historia de Honduras. Próxima reunión: Lunes, 10:00 AM.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-semibold mb-4">Explorar Nuevos Círculos</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md cursor-pointer" onclick="showDashboardContent('view-circle', 'Círculo de Estudios de Química')">
+                                        <h4 class="font-bold text-lg text-blue-600">Círculo de Estudios de Química</h4>
+                                        <p class="text-sm text-gray-600 mb-4">Únete a una comunidad para practicar y resolver dudas de química avanzada.</p>
+                                        <button class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">Unirse</button>
+                                    </div>
+                                    <div class="bg-gray-50 p-6 rounded-2xl shadow-md cursor-pointer" onclick="showDashboardContent('view-circle', 'Club de Lectura Hondureña')">
+                                        <h4 class="font-bold text-lg text-blue-600">Club de Lectura Hondureña</h4>
+                                        <p class="text-sm text-gray-600 mb-4">Una comunidad para discutir y compartir sobre literatura de Honduras.</p>
+                                        <button class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">Unirse</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else { // Contenido para educadores
+                        contentHTML = `
+                            <h2 class="text-3xl font-bold text-gray-800 mb-6">Mis Círculos de Aprendizaje</h2>
+                            <p class="text-gray-600 mb-4">Conéctate con otros estudiantes y educadores para aprender en grupo. Aquí puedes encontrar tus círculos y unirte a otros.</p>
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                                <div class="flex items-center space-x-4">
+                                    <div class="p-3 bg-yellow-100 rounded-full">
+                                        <span class="material-icons text-yellow-600">forum</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-lg">Círculo de Historia de Honduras</h4>
+                                        <p class="text-sm text-gray-600">Reúnete con tu grupo para discutir temas de la historia de Honduras. Próxima reunión: Lunes, 10:00 AM.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    break;
+                case 'view-circle':
+                    const circleName = arguments[1]; // El segundo argumento es el nombre del círculo
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Círculo: ${circleName}</h2>
+                        <button onclick="showDashboardContent('circles')" class="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-semibold mb-4 hover:bg-gray-300 transition duration-300">
+                            Regresar a Círculos
+                        </button>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md mb-6">
+                            <h3 class="text-2xl font-semibold mb-4">Publicaciones</h3>
+                            <div id="circle-posts" class="space-y-6">
+                                <!-- Publicación de ejemplo 1 -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <div class="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center text-sm font-bold text-blue-800">JP</div>
+                                        <p class="font-semibold text-gray-800">Juan Pérez</p>
+                                    </div>
+                                    <p class="text-gray-700">¡Hola a todos! ¿Alguien tiene alguna pregunta sobre el último capítulo del libro?</p>
+                                    <p class="text-xs text-gray-400 mt-2">Hace 2 horas</p>
+                                </div>
+                                <!-- Publicación de ejemplo 2 -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <div class="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center text-sm font-bold text-green-800">MR</div>
+                                        <p class="font-semibold text-gray-700">Me pareció muy interesante la sección sobre los próceres hondureños. Me gustaría saber más sobre la figura de Francisco Morazán.</p>
+                                    <p class="text-xs text-gray-400 mt-2">Hace 30 minutos</p>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-2xl shadow-md">
+                            <h3 class="text-2xl font-semibold mb-4">Escribe un Comentario</h3>
+                            <div class="flex flex-col space-y-4">
+                                <textarea id="circle-comment-input" rows="3" class="w-full p-4 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu comentario aquí..."></textarea>
+                                <button id="post-comment-btn" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700">
+                                    Publicar Comentario
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    // Atachamos el evento de clic al nuevo botón de comentar una vez que el HTML está en el DOM
+                    setTimeout(() => {
+                        const postCommentBtn = document.getElementById('post-comment-btn');
+                        if (postCommentBtn) {
+                            postCommentBtn.addEventListener('click', postComment);
+                        }
+                    }, 0);
+                    break;
+                case 'settings':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Configuración de la Cuenta</h2>
+                        <form class="space-y-6">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Nombre Completo</label>
+                                <input type="text" value="Juan Pérez" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Correo Electrónico</label>
+                                <input type="email" value="juan.perez@example.com" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                                Guardar Cambios
+                            </button>
+                        </form>
+                    `;
+                    break;
+                case 'plans':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Cambiar tu Plan</h2>
+                        <p class="text-gray-600 mb-6">Elige el plan que mejor se adapte a tus necesidades y desbloquea más beneficios.</p>
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+                            <!-- Plan Básico -->
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md text-center">
+                                <h3 class="text-xl font-bold text-gray-800">Básico</h3>
+                                <p class="text-3xl font-extrabold my-4">L. 0.00<span class="text-base font-normal">/mes</span></p>
+                                <ul class="text-sm text-gray-600 space-y-2 mb-6 text-left">
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Acceso a Cursos Fundamentales</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Participación en Círculos</li>
+                                    <li class="flex items-center"><span class="material-icons text-red-500 mr-2">cancel</span>Chat con IA (Limitado)</li>
+                                </ul>
+                                <button class="w-full bg-gray-200 text-gray-600 py-3 rounded-lg font-semibold cursor-not-allowed">Plan Actual</button>
+                            </div>
+                            <!-- Plan Pro -->
+                            <div class="bg-blue-600 text-white p-6 rounded-2xl shadow-lg text-center transform scale-105">
+                                <h3 class="text-xl font-bold">Pro</h3>
+                                <p class="text-3xl font-extrabold my-4">L. 250<span class="text-base font-normal">/mes</span></p>
+                                <ul class="text-sm space-y-2 mb-6 text-left">
+                                    <li class="flex items-center"><span class="material-icons text-white mr-2">check_circle</span>Todo del Plan Básico</li>
+                                    <li class="flex items-center"><span class="material-icons text-white mr-2">check_circle</span>Acceso Ilimitado a Cursos</li>
+                                    <li class="flex items-center"><span class="material-icons text-white mr-2">check_circle</span>Chat con IA Completo</li>
+                                    <li class="flex items-center"><span class="material-icons text-white mr-2">check_circle</span>Soporte Prioritario</li>
+                                </ul>
+                                <button class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-gray-200 transition duration-300">Seleccionar Pro</button>
+                            </div>
+                            <!-- Plan Business -->
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md text-center">
+                                <h3 class="text-xl font-bold text-gray-800">Business</h3>
+                                <p class="text-3xl font-extrabold my-4">L. 500<span class="text-base font-normal">/mes</span></p>
+                                <ul class="text-sm text-gray-600 space-y-2 mb-6 text-left">
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Todo del Plan Pro</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Cuentas de Equipo</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Análisis Avanzado</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Asistencia Personalizada</li>
+                                </ul>
+                                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Seleccionar Business</button>
+                            </div>
+                             <!-- Plan Personalizado -->
+                            <div class="bg-gray-50 p-6 rounded-2xl shadow-md text-center">
+                                <h3 class="text-xl font-bold text-gray-800">Personalizado</h3>
+                                <p class="text-3xl font-extrabold my-4">¡Contáctanos!</p>
+                                <ul class="text-sm text-gray-600 space-y-2 mb-6 text-left">
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Soluciones a la Medida</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Para Instituciones Educativas</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Integración con Sistemas Existentes</li>
+                                    <li class="flex items-center"><span class="material-icons text-green-500 mr-2">check_circle</span>Capacitaciones Exclusivas</li>
+                                </ul>
+                                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                                    Contáctanos
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'credits':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Mis EduCréditos</h2>
+                        <div class="flex items-center bg-yellow-50 p-6 rounded-2xl shadow-inner mb-6">
+                            <span class="material-icons text-yellow-600 text-4xl mr-4">monetization_on</span>
+                            <div>
+                                <p class="text-xl font-semibold text-gray-700">Saldo Actual:</p>
+                                <p class="text-4xl font-bold text-yellow-700 mt-1">1,250</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">Utiliza tus EduCréditos para desbloquear cursos premium o herramientas exclusivas. Puedes ganar más completando lecciones y participando en la comunidad.</p>
+                        <button class="bg-yellow-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-yellow-600 transition duration-300">
+                            Comprar más EduCréditos
+                        </button>
+                    `;
+                    break;
+                case 'notifications':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Notificaciones</h2>
+                        <ul class="space-y-4">
+                            <li class="bg-gray-50 p-4 rounded-xl shadow-sm flex items-center space-x-4">
+                                <span class="material-icons text-blue-600">info</span>
+                                <p class="text-gray-700">Tu progreso en el curso de 'Matemáticas Avanzadas' ha sido actualizado.</p>
+                            </li>
+                            <li class="bg-gray-50 p-4 rounded-xl shadow-sm flex items-center space-x-4">
+                                <span class="material-icons text-green-600">check_circle</span>
+                                <p class="text-gray-700">¡Felicidades! Has completado el curso 'Historia de Honduras'.</p>
+                            </li>
+                            <li class="bg-gray-50 p-4 rounded-xl shadow-sm flex items-center space-x-4">
+                                <span class="material-icons text-orange-600">announcement</span>
+                                <p class="text-gray-700">El nuevo círculo de 'Inglés Básico' está disponible para unirse.</p>
+                            </li>
+                        </ul>
+                    `;
+                    break;
+                case 'chat':
+                    contentHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Chat con Asistente de IA</h2>
+                        <div class="bg-gray-50 p-6 rounded-2xl flex flex-col h-full">
+                            <div id="chat-box" class="flex-grow chat-box p-4 bg-white rounded-xl shadow-inner mb-4 overflow-y-auto">
+                                <div class="mb-4">
+                                    <div class="p-3 bg-blue-50 rounded-xl text-blue-800 max-w-sm mb-2">¡Hola! Soy tu asistente de IA. ¿En qué puedo ayudarte hoy?</div>
+                                </div>
+                                <div id="chat-messages" class="flex flex-col space-y-2">
+                                    <!-- Mensajes del chat se insertan aquí dinámicamente -->
+                                </div>
+                                <div id="loading-dots" class="hidden flex justify-start items-center space-x-2 mt-4 p-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." class="flex-grow px-4 py-3 rounded-l-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button id="send-btn" class="bg-blue-600 text-white px-6 py-3 rounded-r-xl font-semibold hover:bg-blue-700 transition duration-300">
+                                    Enviar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    // Lógica para el chat de IA
+                    setTimeout(() => {
+                        const chatInput = document.getElementById('chat-input');
+                        const sendBtn = document.getElementById('send-btn');
+                        const chatMessages = document.getElementById('chat-messages');
+                        const loadingDots = document.getElementById('loading-dots');
+                        const chatBox = document.getElementById('chat-box');
+
+                        const handleSendMessage = async () => {
+                            const userMessage = chatInput.value.trim();
+                            if (userMessage === '') return;
+
+                            // Muestra el mensaje del usuario
+                            const userMessageDiv = document.createElement('div');
+                            userMessageDiv.className = 'flex justify-end';
+                            userMessageDiv.innerHTML = `<div class="p-3 bg-blue-600 text-white rounded-xl max-w-sm">${userMessage}</div>`;
+                            chatMessages.appendChild(userMessageDiv);
+                            chatInput.value = ''; // Limpia el input inmediatamente
+
+                            // Muestra puntos de carga mientras la IA "responde"
+                            loadingDots.classList.remove('hidden');
+                            chatBox.scrollTop = chatBox.scrollHeight;
+
+                            const aiResponse = await callGeminiAPI(userMessage);
+
+                            loadingDots.classList.add('hidden');
+                            const aiResponseDiv = document.createElement('div');
+                            aiResponseDiv.className = 'flex justify-start';
+                            
+                            // Formatea la respuesta de la IA
+                            const formattedResponse = aiResponse.split('\n').map(line => `<p class="mb-2">${line}</p>`).join('');
+
+                            aiResponseDiv.innerHTML = `<div class="p-3 bg-gray-200 text-gray-800 rounded-xl max-w-sm">${formattedResponse}</div>`;
+                            chatMessages.appendChild(aiResponseDiv);
+                            
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        };
+
+                        if (sendBtn) {
+                            sendBtn.addEventListener('click', handleSendMessage);
+                        }
+                        if (chatInput) {
+                            chatInput.addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter') {
+                                    handleSendMessage();
+                                }
+                            });
+                        }
+                    }, 0);
+                    break;
+                default:
+                    contentHTML = '<div class="text-center text-gray-500">Contenido no encontrado.</div>';
+            }
+
+            contentArea.innerHTML = contentHTML;
+        }
+
+        // Función para agregar un nuevo comentario al círculo
+        function postComment() {
+            const commentInput = document.getElementById('circle-comment-input');
+            const commentText = commentInput.value.trim();
+            
+            if (commentText === '') {
+                return;
+            }
+
+            const postsContainer = document.getElementById('circle-posts');
+            const newComment = document.createElement('div');
+            newComment.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200';
+            
+            newComment.innerHTML = `
+                <div class="flex items-center space-x-3 mb-2">
+                    <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center text-sm font-bold text-purple-800">Tú</div>
+                    <p class="font-semibold text-gray-800">Tú</p>
+                </div>
+                <p class="text-gray-700">${commentText}</p>
+                <p class="text-xs text-gray-400 mt-2">Ahora mismo</p>
+            `;
+
+            if (postsContainer) {
+                postsContainer.appendChild(newComment);
+                commentInput.value = ''; // Limpia el campo de texto
+                
+                // Opcional: desplazar el contenedor de publicaciones al final
+                postsContainer.scrollTop = postsContainer.scrollHeight;
+            }
+        }
+        
+        // --- CORRECCIÓN ---
+        // Se eliminó el bloque de 'event listener' delegado que causaba que las funciones 'onclick' se ejecutaran dos veces.
+        // Los atributos 'onclick' en los botones son manejados de forma nativa por el navegador, por lo que este
+        // listener era redundante y provocaba el error.
+
+        // Mostrar la página de aterrizaje al cargar
+        window.onload = () => {
+            showPage('landing-page');
+        };
+    </script>
+</body>
+</html>
