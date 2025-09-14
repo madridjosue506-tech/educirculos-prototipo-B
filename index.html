@@ -1711,10 +1711,11 @@
 
         // --- Chat functionality ---
         async function callGeminiAPI(prompt) {
-            const apiKey = ""; // Provided by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            // This now calls the serverless function
+            const apiUrl = '/api/chat'; 
+            
             const requestBody = {
-                contents: [{ parts: [{ text: `Responde a la siguiente pregunta de un estudiante de forma concisa y amigable, como un tutor experto. La pregunta es: "${prompt}"` }] }]
+                prompt: prompt
             };
 
             try {
@@ -1723,13 +1724,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
                 });
+
                 if (!response.ok) {
-                    return "Lo siento, estoy teniendo problemas para conectarme. Inténtalo de nuevo más tarde.";
+                    const errorData = await response.json();
+                    return errorData.error || "Lo siento, estoy teniendo problemas para conectarme. Inténtalo de nuevo más tarde.";
                 }
                 const result = await response.json();
-                return result.candidates[0].content.parts[0].text;
+                return result.response;
             } catch (error) {
-                console.error("Error calling Gemini API:", error);
+                console.error("Error calling serverless function:", error);
                 return "Ocurrió un error al contactar al asistente de IA.";
             }
         }
